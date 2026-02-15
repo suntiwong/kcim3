@@ -1,0 +1,49 @@
+#deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kcim-service
+  name: kcim-service
+  namespace: kcim
+spec:
+  replicas: 6
+  selector:
+    matchLabels:
+      app: kcim-service
+  template:
+    metadata:
+      labels:
+        app: kcim-service
+    spec:
+      imagePullSecrets:
+        - name: nexus-prod
+      containers:
+        - env:
+            - name: JAVA_OPTS
+              value: -Xms1024m -Xmx2048m -Djava.security.egd=file:/dev/./urandom
+            - name: TIME_ZONE
+              value: -Dlogback.timezone=Asia/Bangkok
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: status.hostIP
+          image: registry2.ktbcs:8083/kcim/prod/kcim-service:kcim_prod_v3.0.13
+          resources:
+            limits:
+              cpu: 1
+              memory: "2Gi"
+            requests:
+              cpu: 1
+              memory: "1Gi"
+          name: kcim-service
+          volumeMounts:
+            - mountPath: /home/
+              name: kcim-service-volume
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: kcim-service-config
+          name: kcim-service-volume

@@ -1,0 +1,104 @@
+#config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: kcim
+  name: kcim-service-config
+data:
+  application.yml: |+
+    server:
+      port: 8080
+      tomcat:
+        mbeanregistry:
+          enabled: true
+
+    spring:
+      application:
+        name: kcim-service
+      main:
+        allow-bean-definition-overriding: true
+      jmx:
+        enabled: true
+      servlet:
+        multipart:
+          max-file-size: 100MB
+          max-request-size: 100MB
+      
+      datasource:
+        hikari:
+          maximum-pool-size: 15
+          minimum-idle: 5
+          leak-detection-threshold: 1800000
+          leakDetectionThreshold: 1800000
+          connectionTimeout: 60000
+          idleTimeout: 600000
+          maxLifetime: 1800000
+        kcim:
+          initialization-mode: always
+          driverClassName: org.postgresql.Driver
+          jdbcUrl: jdbc:postgresql://10.9.226.225:5432/kcimdbu?sslmode=require&sslcert=deployment/dev/certificate/ciadm.kcimdbu.krungthai.crt&sslkey=deployment/dev/certificate/kcimdbu.krungthai.pk8&sslrootcert=deployment/dev/certificate/root.crt
+          username: ciadm
+          password: ciadm@
+      
+      
+      jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+          ddl-auto: none
+        show-sql: false
+      
+      redis:
+        database: 0
+        port: 16379
+        password: "redis@"
+        timeout: 60000
+        sentinel:
+          master: redis-cluster
+          password: "redis@"
+          nodes:
+            - "10.9.218.39:16379"
+            - "10.9.218.40:16380"
+            - "10.9.218.41:16381"
+          lettuce:
+            shutdown-timeout: 200ms
+      profiles:
+        active: cluster
+      cache:
+        type: redis
+        redis:
+          key-prefix: "prod"
+          use-key-prefix: true
+          time-to-live: -1
+    
+    
+    dbname:
+      kcim: kcim
+      kcc: kcc
+    
+    logging:
+      pattern:
+        console: "%d{HH:mm:ss.SSS} [%X{requestId}] [%X{requestUri}] %-5level %logger{36} - %msg%n"
+    
+    
+    management:
+      security:
+        enabled: false
+      endpoints:
+        health:
+          sensitive: false
+        web:
+          exposure:
+            include: "*"
+
+    services:
+      second: http://cim2
+    
+    ws:
+      kcc:
+        username: CIM
+        password: Kcc
+
+    url-service:
+      authenticate-url: /api/v1/gateway/app/authenticate
+      send-kgs-url: /invoice/KCC-InvoiceProviders/api/v1/invoices/request/KCIM/Confirm/sendkgs
+      create-user-ktb-url: https://admin-service.kcim.svc.cluster.local:8080/api/generateUserKtb
