@@ -2,16 +2,15 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: kcim
-  name: jenkins-deployment-config
+  name: kong-api-gw-config
 data:
   kong.yml: |-
-
     _format_version: "2.1"
 
     consumers:
       - username: kcc
         custom_id: kcc
-      - username: imusr
+      - username: iamusr
         custom_id: iamusr
 
     basicauth_credentials:
@@ -21,380 +20,256 @@ data:
       - consumer: iamusr
         username: iamusr
         password: "iamusr@123!"
-        
-    services: 
-      - name: auth-service # auth service
+
+    services:
+      # ===== AUTH (9090) =====
+      - name: auth-service
         protocol: http
-        host: auth-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: auth-service.kcim.svc.cluster.local
+        port: 9090
         path: /api/auth
         routes:
-          - paths:
+          - name: auth-route
+            paths:
               - /api/auth
             strip_path: true
 
       - name: authen-detail-service
         protocol: http
-        host: auth-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: auth-service.kcim.svc.cluster.local
+        port: 9090
         path: /api/auth-detail
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: auth-detail-route
+            paths:
               - /api/auth-detail
             strip_path: true
 
+      # ===== KCIM (9091) =====
       - name: dropdown-service
         protocol: http
-        host: kcim-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: kcim-service.kcim.svc.cluster.local
+        port: 9091
         path: /api/dropdown
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: dropdown-route
+            paths:
               - /api/dropdown
             strip_path: true
 
-
-      - name: kcim-service #kcim-service
+      - name: kcim-service
         protocol: http
-        host: kcim-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: kcim-service.kcim.svc.cluster.local
+        port: 9091
         path: /api/kcim-service
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: kcim-service-route
+            paths:
               - /api/kcim-service
             strip_path: true
 
       - name: kcim-menu-service
         protocol: http
-        host: kcim-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: kcim-service.kcim.svc.cluster.local
+        port: 9091
         path: /api/cim-menu
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: kcim-menu-route
+            paths:
               - /api/cim-menu
             strip_path: true
 
       - name: kcim-ws-provider
         protocol: http
-        host: kcim-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: kcim-service.kcim.svc.cluster.local
+        port: 9091
         path: /api/ws
         plugins:
           - name: basic-auth
             config:
               hide_credentials: false
         routes:
-          - paths:
+          - name: kcim-provider-route
+            paths:
               - /api/kcim-provider
             strip_path: true
 
-
-      - name: transport-service # Transport
+      # ===== TRANSPORT (9092) =====
+      - name: transport-service
         protocol: http
-        host: transport-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: transport-service.kcim.svc.cluster.local
+        port: 9092
         path: /api/transport-service
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
-              - /api/transport-service 
+          - name: transport-service-route
+            paths:
+              - /api/transport-service
             strip_path: true
 
       - name: transport-menu-service
         protocol: http
-        host: transport-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: transport-service.kcim.svc.cluster.local
+        port: 9092
         path: /api/rtm-menu
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: transport-menu-route
+            paths:
               - /api/transport-menu
             strip_path: true
 
       - name: transport-dropdown-service
         protocol: http
-        host: transport-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: transport-service.kcim.svc.cluster.local
+        port: 9092
         path: /api/transport-dropdown
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: transport-dropdown-route
+            paths:
               - /api/transport-dropdown
             strip_path: true
 
-
-      - name: ccms-menu-service # CCMS
+      # ===== CCMS (9093) =====
+      - name: ccms-menu-service
         protocol: http
-        host: ccms-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: ccms-service.kcim.svc.cluster.local
+        port: 9093
         path: /api/ccms-menu
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: ccms-menu-route
+            paths:
               - /api/ccms-menu
             strip_path: true
 
       - name: ccms-service
         protocol: http
-        host: ccms-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: ccms-service.kcim.svc.cluster.local
+        port: 9093
         path: /api/ccms-service
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: ccms-service-route
+            paths:
               - /api/ccms-service
             strip_path: true
 
       - name: dropdown-ccms-service
         protocol: http
-        host: ccms-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: ccms-service.kcim.svc.cluster.local
+        port: 9093
         path: /api/ccms-dropdown
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: ccms-dropdown-route
+            paths:
               - /api/ccms-dropdown
             strip_path: true
 
-
-      - name: settlement-menu-service # Settlement
+      # ===== ADMIN (9095) =====
+      - name: admin-menu-service
         protocol: http
-        host: settlement-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/settlement-menu
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/settlement-menu
-            strip_path: true
-
-      - name: settlement-service
-        protocol: http
-        host: settlement-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/settlement
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/settlement
-            strip_path: true
-
-      - name: settlement-ws-provider
-        protocol: http
-        host: settlement-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/settlementws
-        routes:
-          - paths:
-              - /api/settlement-provider
-            strip_path: true
-
-
-      - name: admin-menu-service #Admin
-        protocol: http
-        host: admin-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: admin-service.kcim.svc.cluster.local
+        port: 9095
         path: /api/admin-menu
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: admin-menu-route
+            paths:
               - /api/admin-menu
             strip_path: true
 
       - name: admin-service
         protocol: http
-        host: admin-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: admin-service.kcim.svc.cluster.local
+        port: 9095
         path: /api/admin-service
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: admin-service-route
+            paths:
               - /api/admin-service
             strip_path: true
 
       - name: admin-dropdown
         protocol: http
-        host: admin-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: admin-service.kcim.svc.cluster.local
+        port: 9095
         path: /api/admin-dropdown
         plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
+          - name: custom-auth
+            config:
+              authVerifyTokenEndpoint: http://auth-service.kcim.svc.cluster.local:9090/verifyToken
         routes:
-          - paths:
+          - name: admin-dropdown-route
+            paths:
               - /api/admin-dropdown
             strip_path: true
-            
+
       - name: iam-ws-provider
         protocol: http
-        host: admin-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: admin-service.kcim.svc.cluster.local
+        port: 9095
         path: /api/iam-service
         plugins:
           - name: basic-auth
             config:
               hide_credentials: false
         routes:
-          - paths:
+          - name: iam-service-route
+            paths:
               - /api/iam-service
             strip_path: true
-            
-            
-      - name: admin-health #Admin health
+
+      - name: admin-health
         protocol: http
-        host: admin-service.kcim-dev.svc.cluster.local
-        port: 8080
+        host: admin-service.kcim.svc.cluster.local
+        port: 9095
         path: /actuator
         routes:
-          - paths:
+          - name: admin-health-route
+            paths:
               - /api/admin-health
             strip_path: true
-
-
-      - name: report-service #Report
-        protocol: http
-        host: report-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/report-service
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/report-service
-            strip_path: true
-
-
-      - name: fee-menu #Fee
-        protocol: http
-        host: fee-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/fee-menu
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/fee-menu
-            strip_path: true
-
-      - name: fee-dropdown-service
-        protocol: http
-        host: fee-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/fee-dropdown
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/fee-dropdown
-            strip_path: true
-
-      - name: fee-service
-        protocol: http
-        host: fee-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/fee-service
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/fee-service
-            strip_path: true
-
-
-      - name: caps-service # Caps
-        protocol: http
-        host: kcim-service.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/caps-service
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/caps-service
-            strip_path: true
-            
-      - name: fee-batch # Kcim Batch
-        protocol: http
-        host: kcim-batch.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/fee-batch
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/fee-batch
-            strip_path: true
-            
-      - name: report33 # Kcim Batch
-        protocol: http
-        host: kcim-batch.kcim-dev.svc.cluster.local
-        port: 8080
-        path: /api/report33
-        plugins:
-        - name: custom-auth
-          config:
-            authVerifyTokenEndpoint: http://auth-service.kcim-dev.svc.cluster.local:8080/verifyToken
-        routes:
-          - paths:
-              - /api/report33
-            strip_path: true
-
