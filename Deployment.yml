@@ -1,0 +1,73 @@
+  #deployment.yml
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: kong-api-gw
+    name: kong-api-gw
+    namespace: kcim
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: kong-api-gw
+    template:
+      metadata:
+        labels:
+          app: kong-api-gw
+      spec:
+        imagePullSecrets:
+          - name: nexus-prod
+        containers:
+          - env:
+              - name: KONG_PLUGINS
+                value: "bundled,custom-auth,custom-header,circuit-breaker"
+              - name: KONG_DATABASE
+                value: "off"
+              - name: KONG_DECLARATIVE_CONFIG
+                value: "/etc/kong-config/kong.yml"
+              - name: KONG_PROXY_ACCESS_LOG
+                value: "/dev/stdout custom_log"
+              - name: KONG_ADMIN_ACCESS_LOG
+                value: "/dev/stdout"
+              - name: KONG_PROXY_ERROR_LOG
+                value: "/dev/stderr"
+              - name: KONG_ADMIN_ERROR_LOG
+                value: "/dev/stderr"
+              - name: KONG_ADMIN_LISTEN
+                value: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+              - name: KONG_HEADERS
+                value: "off"
+              - name: KONG_NGINX_HTTP_LOG_FORMAT
+                value: "custom_log '[$time_local] realip_remote_addr=> $realip_remote_addr , http_x_forwarded_for => $http_x_forwarded_for , remote addr=> $remote_addr , remote_user=> $remote_user , server_name=> $server_name , host=> $host , upstream addr=> $proxy_host($upstream_addr), request=> $request, status=> $status, upstream_response_time=> $upstream_response_time , msec=> $msec , request_time=> $request_time'"
+            image: registry2.ktbcs:8083/kcim/prod/kong:kcim_prod_v3.0.2
+            readinessProbe:
+              httpGet:
+                path: /status
+                port: 8001
+              initialDelaySeconds: 5
+              periodSeconds: 15
+            livenessProbe:
+              httpGet:
+                path: /status
+                port: 8001
+              initialDelaySeconds: 15
+              periodSeconds: 15
+            resources:
+              limits:
+                cpu: 1
+                memory: "1Gi"
+              requests:
+                cpu: 1
+                memory: "500Mi"
+            name: kong-api-gw
+            volumeMounts:
+              - mountPath: /etc/kong-config/
+                name: kong-api-gw-volume
+
+        volumes:
+          - configMap:
+              defaultMode: 420
+              name: kong-api-gw-config
+            name: kong-api-gw-volume
