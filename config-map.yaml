@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: jenkins-namespace
+  namespace: kcim
   name: jenkins-deployment-config
 data:
   kong.yml: |-
@@ -397,3 +397,4 @@ data:
           - paths:
               - /api/report33
             strip_path: true
+
