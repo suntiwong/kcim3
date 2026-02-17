@@ -1,0 +1,5 @@
+service:
+  path: /api/auth
+route:
+  paths: [/api/auth]
+  strip_path: true
