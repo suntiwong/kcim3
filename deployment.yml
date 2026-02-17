@@ -78,7 +78,7 @@ spec:
             # DEV fix: make sure kong finds /usr/local/kong/ssl/admin-kong-default.crt
             - name: kong-admin-ssl
               mountPath: /usr/local/kong/ssl
-              readOnly: true
+            
 
       volumes:
         - name: kong-api-gw-volume
@@ -89,3 +89,4 @@ spec:
         # DEV fix: store generated certs
         - name: kong-admin-ssl
           emptyDir: {}
+
