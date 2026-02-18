@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kong-api-gw
+  name: kong-api-gw
+  namespace: kcim
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-api-gw
+  template:
+    metadata:
+      labels:
+        app: kong-api-gw
+    spec:
+      # DEV fix: generate admin ssl cert files expected by the image
+      initContainers:
+        - name: gen-admin-cert
+          image: alpine:3.19
+          command: ["/bin/sh","-c"]
+          args:
+            - apk add --no-cache openssl &&
+              mkdir -p /ssl &&
+              openssl req -x509 -nodes -newkey rsa:2048
+              -keyout /ssl/admin-kong-default.key
+              -out /ssl/admin-kong-default.crt
+              -subj "/CN=kong-admin"
+              -days 365
+          volumeMounts:
+            - name: kong-admin-ssl
+              mountPath: /ssl
+
+      containers:
+        - name: kong-api-gw
+          image: teegolf/kong-dbless:0.5.47
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+            - containerPort: 8001
+            # DEV: disable admin ssl port exposure for now
+            # - containerPort: 8444
+
+          # DEV minimal env: no custom plugins, keep only what is required for DB-less
+          env:
+            - name: KONG_PLUGINS
+              value: "bundled,custom-auth,custom-header,circuit-breaker"
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_DECLARATIVE_CONFIG
+              value: "/etc/kong-config/kong.yml"
+            - name: KONG_ADMIN_LISTEN
+              value: "0.0.0.0:8001"
+
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8001
+            initialDelaySeconds: 30
+            periodSeconds: 15
+
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: "0.5"
+              memory: "500Mi"
+
+          volumeMounts:
+            - mountPath: /etc/kong-config/
+              name: kong-api-gw-volume
+            # DEV fix: make sure kong finds /usr/local/kong/ssl/admin-kong-default.crt
+            - name: kong-admin-ssl
+              mountPath: /usr/local/kong/ssl
+              readOnly: true
+
+      volumes:
+        - name: kong-api-gw-volume
+          configMap:
+            name: kong-api-gw-config
+            defaultMode: 420
+
+        # DEV fix: store generated certs
+        - name: kong-admin-ssl
+          emptyDir: {}
