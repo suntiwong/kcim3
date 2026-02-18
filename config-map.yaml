@@ -274,7 +274,5 @@ data:
               - /api/admin-health
             strip_path: true
 
-  # ✅ เพิ่มไฟล์ที่ Kong include หาอยู่
-  my-server.kong.conf: |-
-    # Custom Nginx directives for Kong (optional)
-    # Leave empty if you don't need anything special.
+
+
