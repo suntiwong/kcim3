@@ -4,21 +4,17 @@ metadata:
   namespace: kcim
   name: kong-api-gw-config
 data:
-  # ✅ 1. kong.conf — สำคัญมาก! ต้องมีเพื่อเปิดโหมด DB-less และชี้ไปที่ kong.yml
   kong.conf: |-
     database = off
-    declarative_config = /usr/local/kong/kong.yml
     nginx_worker_processes = 1
     log_level = debug
     proxy_listen = 0.0.0.0:8000
     admin_listen = 0.0.0.0:8001
-    # ปิดการสร้าง default cert (เพื่อหลีกเลี่ยง read-only error)
     ssl_cert_default =
     ssl_cert_key_default =
 
-  # ✅ 2. kong.yml — ใช้ชื่อนี้เพื่อให้ตรงกับ declarative_config
   kong.yml: |-
-    _format_version: "2.1"
+    _format_version: "3.0"
 
     consumers:
       - username: kcc
@@ -62,7 +58,7 @@ data:
               - /api/auth-detail
             strip_path: true
 
-      # ... (ส่วนอื่นๆ คงเดิม — ไม่ต้องเปลี่ยน)
+      # ... (ส่วนอื่นๆ คงเดิม)
 
       # ===== ADMIN (9095) =====
       - name: admin-health
@@ -75,5 +71,3 @@ data:
             paths:
               - /api/admin-health
             strip_path: true
-
-  # ❌ ลบ my-server.kong.conf ออกได้เลย — ไม่จำเป็น
