@@ -107,17 +107,14 @@ data:
           
           
     ad: 
-  # ใช้ NetBIOS domain (มักใช้ตอนทำ DOMAIN\user)
         domain: KGS
 
         host: ldap://192.168.0.59:389
         hosta: ldap://192.168.0.59:389
         hostb: ldap://192.168.0.59:389
 
-  # ขยาย search base ให้ครอบคลุมทั้งโดเมนก่อน เพื่อไม่ให้หา user ไม่เจอ
         searchbase: DC=KGS,DC=CO,DC=TH
 
-  # ใช้ UPN ที่พิสูจน์แล้วว่า bind ผ่าน
         user: "Administrator@KGS.CO.TH"
         password: "B8HYSZJsa?"
           
@@ -129,5 +126,6 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
 
