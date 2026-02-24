@@ -101,19 +101,25 @@ data:
         suffix: ",ou=people,o=kcim2,o=kcs"
       ktbgs: 
         providerurl: ldap://192.168.0.59:389/o=kcs
-        securityprincipal: ",ou=people,o=kgs.co.th,o=kcs"
-        manager: 
+        securityprincipal: ",ou=People,o=ktbgs.co.th,o=kcs"
+        manager:
           searchscope: ""
           
           
     ad: 
-      domain: KTB.KTBDOMAIN
-      host: ldap://10.1.214.252:389
-      hosta: ldap://10.1.214.252:389
-      hostb: ldap://10.1.214.252:389
-      searchbase: "OU=KTBUSERS,DC=KTB,DC=KTBDOMAIN"
-      user: "KTBSEARCH"
-      password: "#Ujede*t_7:X3fP"
+  # ใช้ NetBIOS domain (มักใช้ตอนทำ DOMAIN\user)
+        domain: KGS
+
+        host: ldap://192.168.0.59:389
+        hosta: ldap://192.168.0.59:389
+        hostb: ldap://192.168.0.59:389
+
+  # ขยาย search base ให้ครอบคลุมทั้งโดเมนก่อน เพื่อไม่ให้หา user ไม่เจอ
+        searchbase: DC=KGS,DC=CO,DC=TH
+
+  # ใช้ UPN ที่พิสูจน์แล้วว่า bind ผ่าน
+        user: "Administrator@KGS.CO.TH"
+        password: "B8HYSZJsa?"
           
     jwt:
       secretKey: qMguPwXjaAQnGDzngLBuCcGM7TX76kHR
@@ -123,4 +129,5 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
