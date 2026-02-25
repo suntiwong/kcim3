@@ -81,15 +81,15 @@ data:
     ldap: 
       initialcontextfactory: com.sun.jndi.ldap.LdapCtxFactory
       ktb: 
-        providerurl: ldap://ldap.oud.krungthai:389
-        securityprincipal: ",ou=people,o=ktb.co.th,o=kcs"
+        providerurl: ldap://192.168.0.59:389
+        securityprincipal: ",ou=people,o=kcim2,o=kcs"
         manager: 
-          searchscope: "o=ktb.co.th,o=kcs"
+          searchscope: "o=kgs.co.th,o=kcs"
           userid: "uid=ktbquery,ou=people,o=kcs"
           password: "p!H2nPaqwn7Zv8"
       
       otb: 
-        providerurl: ldap://ldap.oud.krungthai:10394/o=kcs
+        providerurl: ldap://192.168.0.59:389/o=kcs
         securityprincipal: ",ou=people,o=kcs"
         securityprincipallogin: ",ou=people,o=kcim2,o=kcs"
         securityprincipalverify: ",ou=people,o=kcim2,o=kcs"
@@ -97,11 +97,11 @@ data:
           searchscope: ""
           userid: "kcim2admin"
           password: "kcim2adm"
-          providerurl: ldap://ldap.oud.krungthai:10394
+          providerurl: ldap://192.168.0.59:389
         suffix: ",ou=people,o=kcim2,o=kcs"
       ktbgs: 
         providerurl: ldap://192.168.0.59:389/o=kcs
-        securityprincipal: ",ou=People,o=ktbgs.co.th,o=kcs"
+        securityprincipal: ",ou=People,o=kcim2,o=kcs"
         manager:
           searchscope: ""
           
@@ -109,9 +109,9 @@ data:
     ad: 
         domain: KGS
 
-        host: ldap://192.168.0.59:389
-        hosta: ldap://192.168.0.59:389
-        hostb: ldap://192.168.0.59:389
+        host: ldap://10.121.1.21:389
+        hosta: ldap://10.121.1.21:389
+        hostb: ldap://10.121.1.21:389
 
         searchbase: DC=KGS,DC=CO,DC=TH
 
@@ -126,6 +126,7 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
 
 
