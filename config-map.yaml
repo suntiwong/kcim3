@@ -27,12 +27,12 @@ data:
         protocol: http
         host: auth-service.kcim.svc.cluster.local
         port: 9090
-        path: /api/auth
+        path: /
         routes:
           - name: auth-route
             paths:
               - /api/auth
-            strip_path: true
+            strip_path: false
 
       - name: authen-detail-service
         protocol: http
@@ -273,3 +273,4 @@ data:
             paths:
               - /api/admin-health
             strip_path: true
+
