@@ -31,7 +31,7 @@ data:
         routes:
           - name: auth-route
             paths:
-              - /api/auth
+              - /api/auth/
             strip_path: false
 
       - name: authen-detail-service
@@ -273,4 +273,5 @@ data:
             paths:
               - /api/admin-health
             strip_path: true
+
 
