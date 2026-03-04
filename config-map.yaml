@@ -27,7 +27,7 @@ data:
         protocol: http
         host: auth-service.kcim.svc.cluster.local
         port: 9090
-        path: /
+        # path: /
         routes:
           - name: auth-route
             paths:
@@ -273,6 +273,7 @@ data:
             paths:
               - /api/admin-health
             strip_path: true
+
 
 
 
