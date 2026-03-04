@@ -119,7 +119,7 @@ data:
           listen       80;
           server_name  localhost;
           resolver       kube-dns.kube-system.svc.cluster.local valid=5s;
-          set $upstreamapi  kong-api-service.kcim-dev.svc.cluster.local:8000;
+          set $upstreamapi  kong-api-service.kcim.svc.cluster.local:8000;
 
           location / {
               root   /usr/share/nginx/html;
@@ -162,4 +162,5 @@ data:
           }
       }
     }
+
 
