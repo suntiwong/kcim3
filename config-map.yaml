@@ -5,7 +5,7 @@ metadata:
   name: kong-api-gw-config
 data:
   kong.yml: |-
-    _format_version: "3.0"
+    _format_version: "3.1"
 
     consumers:
       - username: kcc
@@ -273,6 +273,7 @@ data:
             paths:
               - /api/admin-health
             strip_path: true
+
 
 
 
