@@ -173,20 +173,6 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: kcim-service
-  namespace: kcim
-spec:
-  type: ClusterIP
-  selector:
-    app: kcim-service
-  ports:
-    - name: http
-      port: 9091
-      targetPort: 9091
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -203,11 +189,20 @@ spec:
         app: kcim3-web
     spec:
       containers:
-        - name: kcim3-web
-          image: teegolf/kcim3:3.0.0.1
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 80
+      - name: kcim3-web
+        image: nginx:1.27
+        ports:
+        - containerPort: 80
+
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx
 ---
 apiVersion: v1
 kind: Service
@@ -261,6 +256,7 @@ spec:
     - name: http
       port: 9092
       targetPort: 9092
+
 
 
 
