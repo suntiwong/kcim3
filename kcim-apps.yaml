@@ -190,7 +190,8 @@ spec:
     spec:
       containers:
       - name: kcim3-web
-        image: nginx:1.27
+        image: teegolf/kcim3:3.0.0.1
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 80
 
@@ -256,6 +257,7 @@ spec:
     - name: http
       port: 9092
       targetPort: 9092
+
 
 
 
