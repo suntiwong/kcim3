@@ -107,7 +107,7 @@ data:
           
           
     ad: 
-        domain: KGS
+        domain: KGS.CO.TH
 
         host: ldap://192.168.0.59:389
         hosta: ldap://192.168.0.59:389
@@ -126,6 +126,7 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
 
 
