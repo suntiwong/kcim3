@@ -109,9 +109,9 @@ data:
     ad: 
         domain: KGS
 
-        host: ldap://10.121.1.21:389
-        hosta: ldap://10.121.1.21:389
-        hostb: ldap://10.121.1.21:389
+        host: ldap://192.168.0.59:389
+        hosta: ldap://192.168.0.59:389
+        hostb: ldap://192.168.0.59:389
 
         searchbase: DC=KGS,DC=CO,DC=TH
 
@@ -126,6 +126,7 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
 
 
