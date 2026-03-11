@@ -80,7 +80,7 @@ data:
       
     ldap: 
       initialcontextfactory: com.sun.jndi.ldap.LdapCtxFactory
-      ktb: 
+      kgs: 
         providerurl: ldap://192.168.0.59:389
         securityprincipal: ",ou=people,o=kcim2,o=kcs"
         manager: 
@@ -126,6 +126,7 @@ data:
       exp: 900000
 
       expRefresh: 1800000
+
 
 
 
